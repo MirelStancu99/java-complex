@@ -17,3 +17,42 @@ public class Client_TCP {
         }
     }
 }
+
+// in main
+
+       final int PORT = 8080;
+        try(ServerSocket serverSocket = new ServerSocket(PORT)){
+            while (true){
+                Socket socket = serverSocket.accept();
+                new Thread(()-> {
+                    try {
+                        procesareCerere(socket);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }).start();
+            }
+        
+    
+
+    static void procesareCerere(Socket socket) throws Exception{
+        try {
+            System.out.println("Astept client...");
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) 
+            {
+                System.out.println("Am stabilit conexiunea!");
+                int nrApPrimit =Integer.parseInt(in.readLine());
+                for (var l : listaApartamente)
+                {
+                    if ( l.getNumarApartament() == nrApPrimit)
+                        out.println(l.getNume());
+                }
+                System.out.println("Am terminat procesarea!");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(e);
+        }
+    }
